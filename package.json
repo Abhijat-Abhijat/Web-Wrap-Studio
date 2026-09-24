@@ -1,0 +1,72 @@
+{
+  "name": "webwrap-studio",
+  "version": "1.0.0",
+  "description": "Turn any website into a desktop app.",
+  "main": "src/main/main.js",
+  "author": "Your Name <you@example.com>",
+  "homepage": "https://example.com/webwrap-studio",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --linux --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:mac": "electron-builder --mac",
+    "pack": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.webwrap.studio",
+    "productName": "WebWrap Studio",
+    "copyright": "Copyright © 2026",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/main/**/*",
+      "src/renderer/**/*",
+      "package.json"
+    ],
+
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "uninstallDisplayName": "WebWrap Studio",
+      "artifactName": "WebWrap-Studio-Setup-${version}.${ext}"
+    },
+
+    "linux": {
+      "target": [{ "target": "deb", "arch": ["x64"] }],
+      "icon": "build/icon.png",
+      "category": "Development",
+      "synopsis": "Turn any website into a desktop app.",
+      "artifactName": "webwrap-studio_${version}_${arch}.${ext}"
+    },
+    "deb": {
+      "depends": ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"]
+    },
+
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "icon": "build/icon.png",
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "artifactName": "WebWrap-Studio-${version}-${arch}.${ext}"
+    }
+  }
+}
