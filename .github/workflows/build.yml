@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - main
-
   workflow_dispatch:
 
-# Prevent two releases from being generated simultaneously.
 concurrency:
   group: release-main
   cancel-in-progress: false
@@ -16,9 +14,9 @@ permissions:
   contents: write
 
 jobs:
-  # ---------------------------------------------------------
-  # 1. Calculate the next version and create the git tag
-  # ---------------------------------------------------------
+  # =========================================================
+  # 1. Calculate version and create tag
+  # =========================================================
   version:
     name: Calculate Version
     runs-on: ubuntu-latest
@@ -41,11 +39,13 @@ jobs:
         run: |
           set -e
 
-          latest=$(git tag --list \
-            | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' \
-            | sed 's/^v//' \
-            | sort -V \
-            | tail -n 1)
+          latest=$(
+            git tag --list \
+              | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' \
+              | sed 's/^v//' \
+              | sort -V \
+              | tail -n 1
+          )
 
           if [ -z "$latest" ]; then
             version="1.0.0"
@@ -59,7 +59,7 @@ jobs:
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Create and push version tag
+      - name: Create and push tag
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
@@ -71,9 +71,10 @@ jobs:
           git tag "$VERSION"
           git push origin "$VERSION"
 
-  # ---------------------------------------------------------
+
+  # =========================================================
   # 2. Build Windows
-  # ---------------------------------------------------------
+  # =========================================================
   build-windows:
     name: Build Windows
     needs: version
@@ -92,25 +93,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Windows installer
-        run: npm run dist:win
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Windows
+        run: npm run dist:win -- --publish never
 
-      # Only upload actual distributable files.
-      - name: Upload Windows installers
+      - name: Show dist contents
+        shell: bash
+        run: |
+          echo "Windows dist contents:"
+          ls -lah dist
+
+      - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: |
-            dist/*.exe
-            dist/*.exe.blockmap
-            dist/latest.yml
+          path: dist/*
           if-no-files-found: error
 
-  # ---------------------------------------------------------
+
+  # =========================================================
   # 3. Build Linux
-  # ---------------------------------------------------------
+  # =========================================================
   build-linux:
     name: Build Linux
     needs: version
@@ -129,27 +131,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Linux installer
-        run: npm run dist:linux
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Linux
+        run: npm run dist:linux -- --publish never
 
-      # Only upload actual distributable files.
-      - name: Upload Linux installers
+      - name: Show dist contents
+        run: |
+          echo "Linux dist contents:"
+          ls -lah dist
+
+      - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-installer
-          path: |
-            dist/*.deb
-            dist/*.AppImage
-            dist/*.rpm
-            dist/*.snap
-            dist/latest-linux.yml
+          path: dist/*
           if-no-files-found: error
 
-  # ---------------------------------------------------------
+
+  # =========================================================
   # 4. Build macOS
-  # ---------------------------------------------------------
+  # =========================================================
   build-macos:
     name: Build macOS
     needs: version
@@ -168,27 +168,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build macOS installer
-        run: npm run dist:mac
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build macOS
+        run: npm run dist:mac -- --publish never
 
-      # Only upload actual distributable files.
-      - name: Upload macOS installers
+      - name: Show dist contents
+        run: |
+          echo "macOS dist contents:"
+          ls -lah dist
+
+      - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer
-          path: |
-            dist/*.dmg
-            dist/*.dmg.blockmap
-            dist/latest-mac.yml
+          path: dist/*
           if-no-files-found: error
 
-  # ---------------------------------------------------------
+
+  # =========================================================
   # 5. Create GitHub Release
-  # ---------------------------------------------------------
+  # =========================================================
   release:
     name: Create GitHub Release
+
     needs:
       - version
       - build-windows
@@ -198,28 +199,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Windows installer
+      - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
           name: windows-installer
-          path: release
+          path: release/windows
 
-      - name: Download Linux installer
+      - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
           name: linux-installer
-          path: release
+          path: release/linux
 
-      - name: Download macOS installer
+      - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
           name: macos-installer
-          path: release
+          path: release/macos
 
       - name: Show release files
         run: |
+          echo "========================================"
           echo "Files that will be uploaded:"
-          find release -type f -maxdepth 2 -print
+          echo "========================================"
+
+          find release -type f -print
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -228,16 +232,8 @@ jobs:
           name: ${{ needs.version.outputs.version }}
           generate_release_notes: true
           files: |
-            release/*.exe
-            release/*.exe.blockmap
-            release/*.deb
-            release/*.AppImage
-            release/*.rpm
-            release/*.snap
-            release/*.dmg
-            release/*.dmg.blockmap
-            release/latest.yml
-            release/latest-linux.yml
-            release/latest-mac.yml
+            release/windows/*
+            release/linux/*
+            release/macos/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
