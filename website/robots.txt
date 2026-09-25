@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://abhijat-abhijat.github.io/Web-Wrap-Studio/sitemap.xml

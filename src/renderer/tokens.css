@@ -1,0 +1,45 @@
+/* Shared design tokens (mudaustralia-derived palette). Used by app and site. */
+:root {
+  --ink: #101820;
+  --text: #2E3333;
+  --text-muted: #63666A;
+  --canvas: #F8F6F1;
+  --surface: #FFFFFF;
+  --border: #E4E0D9;
+  --panel-sand: #F4F1E5;
+  --panel-dust: #EFECE3;
+  --panel-cool: #F2F5F5;
+  --sand-accent: #D3CCB0;
+  --dust-accent: #D0CBBD;
+  --ash: #DADDE4;
+  --ash-accent: #A8ADA4;
+  --hover: #E7E7E7;
+  --error: #E2462F;
+  --error-bg: #F9EEE8;
+  --error-text: #B3321F; /* 4.5:1+ on canvas and error-bg; --error is for borders/icons */
+
+  /* Geist Sans / Instrument Sans are used when installed; no remote loading (CSP). */
+  --font-sans: "Geist Sans", "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --duration: 150ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --duration: 0ms; }
+}

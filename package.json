@@ -4,7 +4,14 @@
   "description": "Turn any website into a desktop app.",
   "main": "src/main/main.js",
   "author": "Your Name <you@example.com>",
-  "homepage": "https://example.com/webwrap-studio",
+  "homepage": "https://github.com/Abhijat-Abhijat/Web-Wrap-Studio#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abhijat-Abhijat/Web-Wrap-Studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Abhijat-Abhijat/Web-Wrap-Studio/issues"
+  },
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
@@ -16,7 +23,7 @@
     "pack": "electron-builder --dir"
   },
   "devDependencies": {
-    "electron": "^32.0.0",
+    "electron": "^38.8.6",
     "electron-builder": "^25.0.0"
   },
   "build": {

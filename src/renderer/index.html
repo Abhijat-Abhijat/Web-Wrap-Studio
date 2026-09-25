@@ -3,162 +3,212 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';">
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Turn any website into a native desktop app.">
+  <meta name="description" content="Turn any website into a desktop app.">
   <title>WebWrap Studio</title>
+  <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app">
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-            <rect x="3" y="4" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M3 8.5H21" stroke="currentColor" stroke-width="1.6"/>
-            <circle cx="6" cy="6.25" r="0.6" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="brand-name">WebWrap Studio</span>
-      </div>
-      <span class="build-target">Local build</span>
-    </header>
 
-    <section class="hero">
-      <div class="hero-text">
-        <h1 class="hero-title">Turn any website into a desktop app.</h1>
-        <p class="hero-body">
-          Point WebWrap at a URL and it produces a self-contained Electron
-          project — window chrome, an app icon, and a build script — ready
-          to package for Linux, Windows, or macOS.
-        </p>
-        <ul class="platform-list" aria-label="Supported platforms">
-          <li>Linux</li>
-          <li>Windows</li>
-          <li>macOS</li>
-        </ul>
-      </div>
-
-      <figure class="hero-diagram" aria-hidden="true">
-        <div class="diagram-node diagram-source">
-          <div class="node-chrome">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="node-body">
-            <div class="node-line" style="width: 78%"></div>
-            <div class="node-line" style="width: 55%"></div>
-            <div class="node-line" style="width: 66%"></div>
-          </div>
-        </div>
-
-        <svg class="diagram-connector" viewBox="0 0 64 24" width="64" height="24" aria-hidden="true">
-          <path d="M2 12H56" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M48 5L58 12L48 19" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- View: form -->
+    <div id="view-form">
+      <header class="intro">
+        <!-- browser window becoming an app window -->
+        <svg class="ill ill-hero" viewBox="0 0 168 72" width="168" height="72" aria-hidden="true" focusable="false">
+          <rect class="a" x="100" y="14" width="52" height="44" rx="5"/>
+          <rect class="l" x="8" y="10" width="62" height="46" rx="5"/>
+          <path class="l" d="M8 21h62"/>
+          <circle class="l" cx="15" cy="15.5" r="1.2"/>
+          <circle class="l" cx="20.5" cy="15.5" r="1.2"/>
+          <path class="l" d="M26 15.5h30M16 30h34M16 37h44M16 44h26"/>
+          <path class="l" d="M78 33c8-5 14-5 20 0M93 28l5 5-5 5"/>
+          <rect class="l" x="106" y="8" width="52" height="44" rx="8"/>
+          <path class="l" d="M114 20h36M114 28h24M114 36h30"/>
         </svg>
-
-        <div class="diagram-node diagram-target">
-          <div class="target-icon">W</div>
-          <div class="target-label">
-            <div class="node-line" style="width: 70%"></div>
-            <div class="node-line" style="width: 45%"></div>
-          </div>
-        </div>
-      </figure>
-    </section>
-
-    <section class="workspace" aria-labelledby="form-title">
-      <div class="section-header">
-        <h2 id="form-title" class="section-title">Project details</h2>
-        <p class="section-description">These generate the project's package.json, main process, and app shell.</p>
-      </div>
+        <h1 class="title">WebWrap Studio</h1>
+        <p class="subhead">Turn any website into a desktop app.</p>
+      </header>
 
       <form id="form" class="form" novalidate>
-        <div class="field field-full">
+        <div class="field">
           <label for="url" class="field-label">Website URL</label>
-          <div class="input-shell url-input-shell">
-            <span class="input-prefix">https://</span>
-            <input
-              id="url"
-              type="url"
-              placeholder="example.com"
-              required
-              autocomplete="url"
-              aria-describedby="url-hint"
-              class="field-input"
-            >
-          </div>
+          <input
+            id="url"
+            type="text"
+            inputmode="url"
+            placeholder="example.com"
+            required
+            autocomplete="url"
+            autofocus
+            aria-describedby="url-hint"
+            class="field-input"
+          >
           <p id="url-hint" class="field-hint" role="alert"></p>
         </div>
 
-        <div class="field-row">
-          <div class="field">
-            <label for="name" class="field-label">Application name</label>
-            <input
-              id="name"
-              type="text"
-              placeholder="My Web App"
-              maxlength="80"
-              required
-              aria-describedby="name-hint"
-              class="field-input"
-            >
-            <p id="name-hint" class="field-hint" role="alert"></p>
-          </div>
-
-          <div class="field">
-            <label for="description" class="field-label">
-              Description <span class="field-optional">Optional</span>
-            </label>
-            <input
-              id="description"
-              type="text"
-              placeholder="A desktop version of my site"
-              maxlength="160"
-              class="field-input"
-            >
-          </div>
+        <!-- empty / loading state of the preview card -->
+        <div id="empty" class="empty">
+          <svg class="ill" viewBox="0 0 72 56" width="72" height="56" aria-hidden="true" focusable="false">
+            <rect class="a" x="34" y="14" width="26" height="26" rx="6"/>
+            <rect class="l" x="10" y="8" width="44" height="36" rx="6"/>
+            <path class="l" d="M18 18h28M18 25h18"/>
+            <path class="l" d="M22 52c6-3 12 3 18 0s10-2 14 0"/>
+          </svg>
+          <p id="empty-text" class="empty-text">Your app preview appears here.</p>
         </div>
 
-        <div class="field field-full">
-          <label for="outputDir" class="field-label">Output folder</label>
-          <div class="input-shell folder-input-shell">
-            <input
-              id="outputDir"
-              type="text"
-              placeholder="Choose a folder"
-              readonly
-              required
-              aria-describedby="output-hint"
-              class="field-input"
-            >
-            <button id="browse" type="button" class="btn btn-tonal">Choose…</button>
+        <section id="preview" class="preview" hidden aria-label="App preview">
+          <button id="icon" type="button" class="icon-tile" aria-label="Change icon"></button>
+          <div class="preview-body">
+            <div class="field preview-name">
+              <label for="name" class="field-label">App name</label>
+              <input
+                id="name"
+                type="text"
+                maxlength="80"
+                required
+                aria-describedby="name-hint"
+                class="field-input"
+              >
+              <p id="name-hint" class="field-hint" role="alert"></p>
+            </div>
+            <button id="change-icon" type="button" class="link">Change icon</button>
           </div>
+        </section>
+
+        <div class="output">
+          <span class="output-text">Saves to <span id="outputDir" class="output-path"></span></span>
+          <button id="browse" type="button" class="link">Change</button>
           <p id="output-hint" class="field-hint" role="alert"></p>
         </div>
 
-        <div class="form-footer">
-          <p class="form-note">
-            The project is generated locally. You'll build and sign the installer as a separate step.
-          </p>
-          <button class="btn btn-filled" id="create" type="submit">
-            <span class="btn-label">Create app</span>
-            <svg class="btn-spinner" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="42" stroke-dashoffset="30"/>
-            </svg>
-          </button>
+        <details class="advanced" id="advanced">
+          <summary>Advanced</summary>
+          <div class="adv-body">
+            <div class="adv-group" role="group" aria-labelledby="g-preset">
+              <div class="adv-head">
+                <h3 class="adv-title" id="g-preset">Start from a preset</h3>
+                <button id="preset-reset" type="button" class="link" hidden>Reset</button>
+              </div>
+              <div id="presets" class="chips"></div>
+              <p id="preset-desc" class="field-hint hint-quiet" aria-live="polite"></p>
+            </div>
+
+            <fieldset class="adv-group">
+              <legend class="adv-title">Window</legend>
+              <div class="pair">
+                <label class="adv-field"><span class="adv-label">Width</span>
+                  <input id="opt-width" class="field-input small" type="number" inputmode="numeric" min="200" max="10000" placeholder="1200" aria-describedby="window-hint"></label>
+                <label class="adv-field"><span class="adv-label">Height</span>
+                  <input id="opt-height" class="field-input small" type="number" inputmode="numeric" min="200" max="10000" placeholder="800" aria-describedby="window-hint"></label>
+              </div>
+              <p id="window-hint" class="field-hint hint-quiet">Pixels, 200 to 10000. Leave empty for the default size.</p>
+              <label class="check"><input type="checkbox" id="opt-frameless"><span>Frameless</span></label>
+              <label class="check"><input type="checkbox" id="opt-ontop"><span>Always on top</span></label>
+              <label class="check"><input type="checkbox" id="opt-remember" checked><span>Remember position</span></label>
+            </fieldset>
+
+            <fieldset class="adv-group">
+              <legend class="adv-title">Tray and startup</legend>
+              <label class="check"><input type="checkbox" id="opt-tray"><span>Show tray icon</span></label>
+              <label class="check"><input type="checkbox" id="opt-mintray"><span>Minimize to tray</span></label>
+              <label class="check"><input type="checkbox" id="opt-login"><span>Start on login</span></label>
+            </fieldset>
+
+            <fieldset class="adv-group">
+              <legend class="adv-title">Appearance</legend>
+              <label class="adv-field"><span class="adv-label">Custom CSS</span>
+                <textarea id="opt-css" class="field-input area" rows="3" spellcheck="false" placeholder="body { font-size: 16px; }"></textarea></label>
+              <label class="adv-field"><span class="adv-label">Custom JavaScript</span>
+                <textarea id="opt-js" class="field-input area" rows="3" spellcheck="false" aria-describedby="js-hint"></textarea></label>
+              <p id="js-hint" class="field-hint hint-quiet">This script runs on the wrapped site. Only add code you trust.</p>
+            </fieldset>
+
+            <fieldset class="adv-group">
+              <legend class="adv-title">Network</legend>
+              <label class="adv-field"><span class="adv-label">User agent</span>
+                <input id="opt-ua" class="field-input" type="text" autocomplete="off" spellcheck="false" aria-describedby="ua-hint" placeholder="Default"></label>
+              <p id="ua-hint" class="field-hint hint-quiet">Leave empty to use the standard one.</p>
+            </fieldset>
+
+            <fieldset class="adv-group">
+              <legend class="adv-title">Permissions the site may use</legend>
+              <label class="check"><input type="checkbox" data-perm="notifications"><span>Notifications</span></label>
+              <label class="check"><input type="checkbox" data-perm="media"><span>Camera and microphone</span></label>
+              <label class="check"><input type="checkbox" data-perm="geolocation"><span>Location</span></label>
+              <label class="check"><input type="checkbox" data-perm="clipboard-read"><span>Clipboard read</span></label>
+              <label class="check"><input type="checkbox" data-perm="fullscreen"><span>Fullscreen</span></label>
+            </fieldset>
+          </div>
+        </details>
+
+        <div class="actions">
+          <button class="btn" id="create" type="submit">Create app</button>
         </div>
       </form>
+    </div>
 
-      <div class="status-region" id="status" role="status" aria-live="polite" aria-atomic="true"></div>
+    <!-- View: success -->
+    <section id="view-success" class="view" hidden aria-labelledby="success-title">
+      <svg class="ill" viewBox="0 0 96 72" width="96" height="72" aria-hidden="true" focusable="false">
+        <rect class="a" x="44" y="18" width="40" height="38" rx="6"/>
+        <rect class="l" x="12" y="10" width="60" height="46" rx="6"/>
+        <path class="l" d="M12 21h60M24 40l8 8 16-18"/>
+      </svg>
+      <h2 id="success-title" class="view-title" tabindex="-1">App created</h2>
+      <p id="success-path" class="view-text"></p>
+      <div class="btn-row">
+        <button id="build-installer" type="button" class="btn">Build installer</button>
+        <button id="show-folder" type="button" class="btn btn-secondary">Show folder</button>
+      </div>
+      <p id="env-note" class="note" role="status"></p>
+      <button id="another" type="button" class="link">Create another app</button>
     </section>
 
-    <footer class="app-footer">
-      <span>WebWrap Studio</span>
-      <span>Built with Electron</span>
-    </footer>
+    <!-- View: build -->
+    <section id="view-build" class="view" hidden aria-labelledby="build-title">
+      <svg id="ill-build" class="ill" viewBox="0 0 96 72" width="96" height="72" aria-hidden="true" focusable="false">
+        <rect class="a" x="44" y="26" width="38" height="34" rx="4"/>
+        <path class="l" d="M16 30l24-12 24 12v26L40 68 16 56zM16 30l24 12 24-12M40 42v26"/>
+        <path class="l" d="M70 14v10M65 19h10"/>
+      </svg>
+      <svg id="ill-done" class="ill" viewBox="0 0 96 72" width="96" height="72" aria-hidden="true" focusable="false" hidden>
+        <rect class="a" x="44" y="26" width="38" height="34" rx="4"/>
+        <path class="l" d="M16 30l24-12 24 12v26L40 68 16 56zM16 30l24 12 24-12M40 42v26"/>
+        <path class="l" d="M64 14l6 6 12-14"/>
+      </svg>
+      <svg id="ill-fail" class="ill" viewBox="0 0 96 72" width="96" height="72" aria-hidden="true" focusable="false" hidden>
+        <rect class="a" x="44" y="26" width="38" height="34" rx="4"/>
+        <path class="l" d="M16 30l24-12 24 12v26L40 68 16 56zM16 30l24 12 24-12"/>
+        <path class="l" d="M40 42l-4 8 6 4-3 10M66 12l12 12M78 12L66 24"/>
+      </svg>
+      <h2 id="build-title" class="view-title" tabindex="-1">Building your installer</h2>
+      <ol id="stages" class="stages" aria-label="Build stages">
+        <li id="stage-install" class="is-current" aria-current="step">Installing</li>
+        <li id="stage-build">Building</li>
+      </ol>
+      <div id="progress" class="progress" aria-hidden="true"><span class="progress-bar"></span></div>
+      <p id="build-message" class="view-text" hidden></p>
+      <details id="details" class="details">
+        <summary>Details</summary>
+        <pre id="log" class="log" tabindex="0" aria-label="Build log"></pre>
+      </details>
+      <div class="btn-row">
+        <button id="cancel-build" type="button" class="btn btn-secondary">Cancel</button>
+        <button id="show-installer" type="button" class="btn" hidden>Show installer</button>
+        <button id="show-details" type="button" class="btn btn-secondary" hidden>Show details</button>
+        <button id="build-back" type="button" class="btn btn-secondary" hidden>Back</button>
+      </div>
+    </section>
+
+    <div class="status-region" id="status" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   </main>
 
+  <script src="presets.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>
