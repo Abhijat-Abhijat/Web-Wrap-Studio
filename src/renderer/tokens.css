@@ -40,6 +40,31 @@
   --duration: 150ms;
 }
 
+/* Dark: warm charcoal. --ink flips to light, so ink fills (primary button, chips)
+   keep legible text via color: var(--surface) (dark). */
+:root { color-scheme: light dark; }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #F1EEE6;
+    --text: #D6D3CB;
+    --text-muted: #A19E96;
+    --canvas: #151614;
+    --surface: #1E1F1D;
+    --border: #35362F;
+    --panel-sand: #24241F;
+    --panel-dust: #222320;
+    --panel-cool: #202323;
+    --sand-accent: #5A5744;
+    --dust-accent: #4E4C42;
+    --ash: #34373C;
+    --ash-accent: #6E736B;
+    --hover: #2C2D2A;
+    --error: #F0705B;
+    --error-bg: #2E1B17;
+    --error-text: #FF9885;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root { --duration: 0ms; }
 }

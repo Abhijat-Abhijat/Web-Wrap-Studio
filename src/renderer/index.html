@@ -6,7 +6,7 @@
         content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Turn any website into a desktop app.">
-  <title>WebWrap Studio</title>
+  <title>Paneshell</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -28,7 +28,7 @@
           <rect class="l" x="106" y="8" width="52" height="44" rx="8"/>
           <path class="l" d="M114 20h36M114 28h24M114 36h30"/>
         </svg>
-        <h1 class="title">WebWrap Studio</h1>
+        <h1 class="title">Paneshell</h1>
         <p class="subhead">Turn any website into a desktop app.</p>
       </header>
 
@@ -47,6 +47,7 @@
             class="field-input"
           >
           <p id="url-hint" class="field-hint" role="alert"></p>
+          <p id="onboard" class="field-hint hint-quiet" hidden>New here? <button id="try-example" type="button" class="chip">Try example.com</button> <button id="dismiss-onboard" type="button" class="link">Dismiss</button></p>
         </div>
 
         <!-- empty / loading state of the preview card -->
@@ -58,6 +59,17 @@
             <path class="l" d="M22 52c6-3 12 3 18 0s10-2 14 0"/>
           </svg>
           <p id="empty-text" class="empty-text">Your app preview appears here.</p>
+        </div>
+
+        <!-- error state: site unreachable / offline -->
+        <div id="offline" class="empty empty-error" hidden>
+          <svg class="ill" viewBox="0 0 72 56" width="72" height="56" aria-hidden="true" focusable="false">
+            <rect class="a" x="34" y="14" width="26" height="26" rx="6"/>
+            <rect class="l" x="10" y="8" width="44" height="36" rx="6"/>
+            <path class="l" d="M22 20l20 16M42 20L22 36"/>
+            <path class="l" d="M22 52c6-3 12 3 18 0s10-2 14 0"/>
+          </svg>
+          <p id="offline-text" class="empty-text">Couldn't reach that site. Check the address and your connection. You can still create the app.</p>
         </div>
 
         <section id="preview" class="preview" hidden aria-label="App preview">
@@ -75,12 +87,16 @@
               >
               <p id="name-hint" class="field-hint" role="alert"></p>
             </div>
-            <button id="change-icon" type="button" class="link">Change icon</button>
+            <div class="preview-links">
+              <button id="change-icon" type="button" class="link">Change icon</button>
+              <button id="toggle-site" type="button" class="link" aria-expanded="false" aria-controls="site-frame">Preview site</button>
+            </div>
           </div>
         </section>
+        <div id="site-frame" class="site-frame" hidden></div>
 
         <div class="output">
-          <span class="output-text">Saves to <span id="outputDir" class="output-path"></span></span>
+          <span class="output-text">Choose where to save<span id="outputDir" class="output-path"></span></span>
           <button id="browse" type="button" class="link">Change</button>
           <p id="output-hint" class="field-hint" role="alert"></p>
         </div>
@@ -142,7 +158,18 @@
               <label class="check"><input type="checkbox" data-perm="clipboard-read"><span>Clipboard read</span></label>
               <label class="check"><input type="checkbox" data-perm="fullscreen"><span>Fullscreen</span></label>
             </fieldset>
+
+            <fieldset class="adv-group">
+              <legend class="adv-title">Privacy</legend>
+              <label class="check"><input type="checkbox" id="opt-crash" aria-describedby="crash-hint"><span>Share anonymous crash reports</span></label>
+              <p id="crash-hint" class="field-hint hint-quiet">Off by default. Errors are only written to a log file on this computer. Nothing is sent.</p>
+            </fieldset>
           </div>
+        </details>
+
+        <details class="advanced" id="recent" hidden>
+          <summary>Recent</summary>
+          <ul id="recent-list" class="recent-list"></ul>
         </details>
 
         <div class="actions">
@@ -164,7 +191,14 @@
         <button id="build-installer" type="button" class="btn">Build installer</button>
         <button id="show-folder" type="button" class="btn btn-secondary">Show folder</button>
       </div>
-      <p id="env-note" class="note" role="status"></p>
+      <div id="env-missing" class="empty empty-error" hidden>
+        <svg class="ill" viewBox="0 0 72 56" width="72" height="56" aria-hidden="true" focusable="false">
+          <rect class="a" x="34" y="14" width="26" height="26" rx="6"/>
+          <path class="l" d="M36 6l20 11v22L36 50 16 39V17zM36 6v44M16 17l20 11 20-11" stroke-dasharray="3 4"/>
+          <path class="l" d="M50 8l10 10M60 8L50 18"/>
+        </svg>
+        <p id="env-note" class="empty-text" role="status"></p>
+      </div>
       <button id="another" type="button" class="link">Create another app</button>
     </section>
 
@@ -200,6 +234,7 @@
         <button id="cancel-build" type="button" class="btn btn-secondary">Cancel</button>
         <button id="show-installer" type="button" class="btn" hidden>Show installer</button>
         <button id="show-details" type="button" class="btn btn-secondary" hidden>Show details</button>
+        <button id="copy-report" type="button" class="btn btn-secondary" hidden>Copy error report</button>
         <button id="build-back" type="button" class="btn btn-secondary" hidden>Back</button>
       </div>
     </section>

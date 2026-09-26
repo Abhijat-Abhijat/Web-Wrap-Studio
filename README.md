@@ -1,14 +1,16 @@
-# WebWrap Studio
+# Paneshell
 
 Paste a URL, get a desktop app project for Windows, macOS and Linux. Free, local, no account, and the project it writes is plain Electron code that you own.
 
-<!-- demo GIF goes here -->
+![Paneshell demo](brand/demo/demo-final.gif)
+
+[Watch the demo video (mp4)](brand/demo/demo-final.mp4) | Site: https://paneshell.abhijat.co.in
 
 ## How it works
 
-1. **Paste a URL.** WebWrap Studio reads the site's title and icon and fills in the app name and icon for you. You can edit both.
+1. **Paste a URL.** Paneshell reads the site's title and icon and fills in the app name and icon for you. You can edit both.
 2. **Check the preview.** The output goes to a default folder (with a "Change" link) unless you pick another.
-3. **Create the app.** You get an Electron project with a `webwrap.config.json`, an icon, and build scripts for Windows, macOS and Linux.
+3. **Create the app.** You get an Electron project with a `paneshell.config.json`, an icon, and build scripts for Windows, macOS and Linux.
 
 Status: creating the project works. Building the installer from inside the app is in progress; until it ships, you build with the commands below (Node.js required).
 
@@ -18,7 +20,7 @@ Requires Node.js (the current LTS is a safe choice) and npm.
 
 ```
 npm install
-npm start           # runs WebWrap Studio in development
+npm start           # runs Paneshell in development
 ```
 
 ## Build installers
@@ -44,20 +46,20 @@ the one included is a placeholder.
 
 ## Install a built installer
 
-- **Windows** — run `WebWrap-Studio-Setup-<version>.exe`. It's an NSIS
+- **Windows** — run `Paneshell-Setup-<version>.exe`. It's an NSIS
   installer with `allowToChangeInstallationDirectory` on, so the user picks
   a folder and gets Start Menu + desktop shortcuts.
-- **Linux (Debian/Ubuntu)** — `sudo dpkg -i webwrap-studio_<version>_amd64.deb`
+- **Linux (Debian/Ubuntu)** — `sudo dpkg -i paneshell_<version>_amd64.deb`
   (or double-click it in a graphical package manager). It registers a
   `.desktop` entry and appears in the app menu.
-- **macOS** — open the `.dmg`, drag WebWrap Studio into `Applications`.
+- **macOS** — open the `.dmg`, drag Paneshell into `Applications`.
 
 ## Uninstall
 
-- **Windows** — Settings → Apps → WebWrap Studio → Uninstall (NSIS writes a
+- **Windows** — Settings → Apps → Paneshell → Uninstall (NSIS writes a
   real uninstaller and registry entry, so it shows up there normally).
-- **Linux** — `sudo apt remove webwrap-studio` (or `sudo dpkg -r webwrap-studio`).
-- **macOS** — drag WebWrap Studio from `Applications` to the Trash.
+- **Linux** — `sudo apt remove paneshell` (or `sudo dpkg -r paneshell`).
+- **macOS** — drag Paneshell from `Applications` to the Trash.
 
 None of these leave background services or daemons running — the app has
 no installer scripts beyond what electron-builder generates, so uninstall
@@ -69,7 +71,7 @@ Each wrapped site becomes its own folder:
 
 ```
 <app-name>/
-  webwrap.config.json   settings the app reads at startup
+  paneshell.config.json   settings the app reads at startup
   main.js               Electron main process; reads the config
   preload.js
   index.html
@@ -78,7 +80,7 @@ Each wrapped site becomes its own folder:
   README.md
 ```
 
-### `webwrap.config.json`
+### `paneshell.config.json`
 
 Every feature of a generated app is a key in this file, so you change behavior by editing JSON, not code. Keys today:
 
@@ -100,7 +102,7 @@ Every feature of a generated app is a key in this file, so you change behavior b
 
 More options (tray, custom CSS and JS, permissions, user agent) are planned as new keys. See `docs/marketing/` and `TODO.md` for status.
 
-The generated project is yours. WebWrap Studio adds no telemetry or licence requirement to it.
+The generated project is yours. Paneshell adds no telemetry or licence requirement to it.
 
 ## Project layout
 
@@ -129,7 +131,7 @@ Facts checked 2026-09-25 with sources in `docs/marketing/02-competitors.md`. Ven
 
 | Tool | Runs | Output | Needs terminal | Price |
 |---|---|---|---|---|
-| WebWrap Studio | Local GUI | Electron project and installers (Win, macOS, Linux) | Not for project creation; builds today need Node | Free |
+| Paneshell | Local GUI | Electron project and installers (Win, macOS, Linux) | Not for project creation; builds today need Node | Free |
 | Pake | Local CLI, or GitHub Actions | Tauri apps, under 10 MB (vendor claim) | Yes | Free, GPL-3.0 with output exception |
 | PakePlus | Local GUI; cloud build needs a GitHub token | Tauri apps, under 5 MB (vendor claim) | No | Free, MIT |
 | Nativefier | Local CLI | Electron apps | Yes | Free, MIT; archived since 2023-09-29 |
@@ -137,8 +139,8 @@ Facts checked 2026-09-25 with sources in `docs/marketing/02-competitors.md`. Ven
 | Websktop | Hosted | Windows, macOS, Linux installers (vendor claim) | No | Free tier, then $10 per app and $2 per build (vendor page) |
 | Chrome / Edge "Install page as app" | Browser | Browser-managed shortcut for one user | No | Free |
 
-Pick Pake or PakePlus if size matters most. Use the browser's install option for your own use. WebWrap Studio is for when you want a local GUI, no per-app fees, and a project you can edit and hand to others.
+Pick Pake or PakePlus if size matters most. Use the browser's install option for your own use. Paneshell is for when you want a local GUI, no per-app fees, and a project you can edit and hand to others.
 
 ## License
 
-To be decided by the owner (recommendation: MIT). `package.json` currently says `UNLICENSED`; no `LICENSE` file exists yet. Generated projects are yours regardless of the licence chosen for this tool.
+MIT, see `LICENSE`. Author: Abhijat. Contact: abhijat.tech@gmail.com. Generated projects are yours regardless of the licence chosen for this tool.

@@ -12,7 +12,7 @@
 
 ## What could cost money to run
 
-Only things that are not local. As designed today, WebWrap Studio runs on the user's machine and costs nothing per user. Costs appear only if you add: hosted builds (CI minutes, especially macOS runners), code signing certificates (Windows certificate, Apple Developer Program membership), or an update server. I have not verified current prices for these; check them before setting any paid tier. TODO T23 (signing) and T28 (signed releases) mean you will carry the certificate cost yourself for the app's own releases regardless of model.
+Only things that are not local. As designed today, Paneshell runs on the user's machine and costs nothing per user. Costs appear only if you add: hosted builds (CI minutes, especially macOS runners), code signing certificates (Windows certificate, Apple Developer Program membership), or an update server. I have not verified current prices for these; check them before setting any paid tier. TODO T23 (signing) and T28 (signed releases) mean you will carry the certificate cost yourself for the app's own releases regardless of model.
 
 ## Option A: Free and open source, no paid tier at launch
 
@@ -49,13 +49,13 @@ Hosted competitors charge per app or per build ($10 and $2 for Websktop). That g
 
 Two separate questions.
 
-**1. License for WebWrap Studio's own code (M5).**
+**1. License for Paneshell's own code (M5).**
 - **MIT** (recommended). Short, permissive, familiar to the audience, and identical to Nativefier's license (verified, see 02), so no friction for people switching. Allows anyone to fork it, including commercially. That risk is real but low for a small tool, and it matches the "you own everything" message.
 - **Apache-2.0.** Adds an explicit patent grant and a NOTICE requirement. Reasonable if you fear patent disputes or expect corporate contributors. Slightly heavier for a small tool.
 - **GPL-3.0.** Pake uses GPL-3.0 with an exception for built apps (verified, 02). GPL protects against closed forks but creates doubt about generated output. If you choose GPL you must state clearly that generated projects are yours to license as you wish, as Pake does.
 - **Source-available (BSL and similar).** Only if you plan Option C or a competing hosted service. Not recommended here; it reduces goodwill on the launch channels.
 
-**2. License of the generated project.** State explicitly, in the README and app footer, that the output belongs to the user and carries no WebWrap Studio license obligation. The template files should carry either no license header or one the user can remove. Confirm the generator's own template code is covered by the same permissive license.
+**2. License of the generated project.** State explicitly, in the README and app footer, that the output belongs to the user and carries no Paneshell license obligation. The template files should carry either no license header or one the user can remove. Confirm the generator's own template code is covered by the same permissive license.
 
 **Dependencies.** The app and the generated projects depend on Electron and electron-builder. Verified 2026-09-25 from each repo page and the npm registry: Electron is MIT (v44.4.5), electron-builder is MIT (26.15.3 on npm; GitHub release 26.16.1), Electron Forge is MIT (7.11.2). Electron ships Chromium and other components with their own licences (`LICENSES.chromium.html`, a 15 MB file in the Electron distribution here). Pake's repo shows GPL-3.0 with an output exception, but it is a competitor, not a dependency. Still run a license check on `package.json` dependencies before publishing, and add a third-party notices file. Also note that Chromium inside Electron carries its own notices, which Electron ships.
 

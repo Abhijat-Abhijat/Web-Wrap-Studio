@@ -1,18 +1,18 @@
 {
-  "name": "webwrap-studio",
+  "name": "paneshell",
   "version": "1.0.0",
   "description": "Turn any website into a desktop app.",
   "main": "src/main/main.js",
-  "author": "Your Name <you@example.com>",
-  "homepage": "https://github.com/Abhijat-Abhijat/Web-Wrap-Studio#readme",
+  "author": "Abhijat <abhijat.tech@gmail.com>",
+  "homepage": "https://github.com/Abhijat-Abhijat/paneshell#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Abhijat-Abhijat/Web-Wrap-Studio.git"
+    "url": "git+https://github.com/Abhijat-Abhijat/paneshell.git"
   },
   "bugs": {
-    "url": "https://github.com/Abhijat-Abhijat/Web-Wrap-Studio/issues"
+    "url": "https://github.com/Abhijat-Abhijat/paneshell/issues"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "start": "electron .",
@@ -27,8 +27,8 @@
     "electron-builder": "^25.0.0"
   },
   "build": {
-    "appId": "com.webwrap.studio",
-    "productName": "WebWrap Studio",
+    "appId": "com.abhijat.paneshell",
+    "productName": "Paneshell",
     "copyright": "Copyright © 2026",
     "directories": {
       "output": "dist",
@@ -50,8 +50,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "uninstallDisplayName": "WebWrap Studio",
-      "artifactName": "WebWrap-Studio-Setup-${version}.${ext}"
+      "uninstallDisplayName": "Paneshell",
+      "artifactName": "Paneshell-Setup-${version}.${ext}"
     },
 
     "linux": {
@@ -59,7 +59,7 @@
       "icon": "build/icon.png",
       "category": "Development",
       "synopsis": "Turn any website into a desktop app.",
-      "artifactName": "webwrap-studio_${version}_${arch}.${ext}"
+      "artifactName": "paneshell_${version}_${arch}.${ext}"
     },
     "deb": {
       "depends": ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"]
@@ -73,7 +73,7 @@
       "gatekeeperAssess": false
     },
     "dmg": {
-      "artifactName": "WebWrap-Studio-${version}-${arch}.${ext}"
+      "artifactName": "Paneshell-${version}-${arch}.${ext}"
     }
   }
 }

@@ -1,5 +1,5 @@
 /* Starting points for the Advanced panel. Generic categories, same schema as the createProject options. */
-window.WEBWRAP_PRESETS = [
+window.PANESHELL_PRESETS = [
   { id: "reading", label: "Reading and notes", description: "Standard window that remembers where you left it.", options: {} },
   { id: "chat", label: "Chat app", description: "Tray icon, closes to tray, allows notifications.",
     options: { tray: { enabled: true, minimizeToTray: true }, permissions: { allow: ["notifications"] } } },

@@ -1,6 +1,6 @@
-# WebWrap Studio brand kit
+# Paneshell brand kit
 
-Working name. See `name-check.md`: the name has collisions and may change. Only the wordmark text depends on it.
+Product name: Paneshell (renamed from WebWrap Studio on 2026-09-26; see `name-check.md` for the history). Only the wordmark text depends on the name.
 
 ## The mark
 
@@ -44,3 +44,7 @@ Use an Electron script that loads each SVG in a hidden transparent window, sets 
 ## Still needs a designer
 
 Optical alignment of the mark, wordmark converted to paths with a licensed or open font, `.ico` and `.icns` checks on real OS docks and taskbars, and a final name.
+
+## Added 2026-09-26
+
+`logo-light.svg` and `logo-dark.svg` (wordmark on canvas / ink, sand `#D3CCB0` wrap arc), `icon-1024.png`, `icon-old.png` (previous build/icon.png), and `producthunt/` (gallery-1..4 at 1270x760, thumbnail-240 at 240x240, built from real screenshots).

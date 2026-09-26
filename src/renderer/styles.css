@@ -1,4 +1,4 @@
-/* WebWrap Studio. Tokens live in tokens.css. Flat, 1px borders, no gradients. */
+/* Paneshell. Tokens live in tokens.css. Flat, 1px borders, no gradients. */
 
 * { box-sizing: border-box; }
 
@@ -126,6 +126,9 @@ button.icon-tile:disabled { cursor: default; }
   font-size: 13px;
 }
 .empty[hidden] { display: none; }
+.empty-error { border-color: var(--error); border-style: solid; color: var(--error-text); background: var(--error-bg); }
+.empty-error .ill .a { fill: var(--error); opacity: 0.35; }
+.empty-error .ill .l { stroke: var(--error-text); }
 .empty-text { margin: 0; }
 
 .sr-only {
@@ -328,3 +331,13 @@ button.icon-tile:disabled { cursor: default; }
 .field-hint, .subhead, .output-text { text-wrap: pretty; }
 .title { text-wrap: balance; }
 .app { overflow-wrap: anywhere; }
+
+/* Live site preview: webview has no intrinsic height, so size it explicitly. */
+.site-frame { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.site-frame[hidden] { display: none; }
+.site-frame webview { display: inline-flex; width: 100%; height: 360px; vertical-align: top; }
+
+.recent-list { list-style: none; margin: 0; padding: 0; color: var(--text-muted); font-size: 13px; }
+.recent-list li { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; min-height: 40px; }
+.recent-list li > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#onboard:not([hidden]) { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }

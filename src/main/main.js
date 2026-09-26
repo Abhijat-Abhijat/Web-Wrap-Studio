@@ -1,9 +1,38 @@
-const { app, BrowserWindow, ipcMain, dialog, shell, nativeImage } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell, nativeImage, clipboard } = require("electron");
 const path = require("path");
 const fs = require("fs/promises");
 const { constants: fsConstants } = require("fs");
 const { spawn } = require("child_process");
 const { generateProject, pngFromDataUrl } = require("./generator");
+const store = require("./store");
+
+// Local settings/history in userData. Nothing here is ever sent anywhere.
+const settingsFile = () => {
+  const nf = path.join(app.getPath("userData"), "paneshell.json");
+  const old = path.join(app.getPath("userData"), "webwrap-studio.json"); // pre-rename store: copy once
+  try {
+    const f = require("fs");
+    if (!f.existsSync(nf) && f.existsSync(old)) f.copyFileSync(old, nf);
+  } catch { /* migration is best-effort */ }
+  return nf;
+};
+const getSettings = () => ({ recent: [], onboarded: false, crashReports: false, ...store.read(settingsFile(), {}) });
+const saveSettings = (patch) => store.write(settingsFile(), { ...getSettings(), ...patch });
+
+// Opt-in local error log (userData/logs/errors.log). Off unless the user ticked the box.
+function logError(kind, msg) {
+  if (!getSettings().crashReports) return;
+  try {
+    const nodefs = require("fs");
+    const dir = path.join(app.getPath("userData"), "logs");
+    nodefs.mkdirSync(dir, { recursive: true });
+    nodefs.appendFileSync(path.join(dir, "errors.log"), store.logLine(kind, msg));
+  } catch { /* logging must never throw */ }
+}
+process.on("uncaughtException", (e) => {
+  logError("uncaught", (e && e.stack) || e);
+  dialog.showErrorBox("Paneshell", (e && e.message) || "Unexpected error");
+});
 
 let mainWindow;
 
@@ -13,14 +42,23 @@ function createWindow() {
     height: 760,
     minWidth: 720,
     minHeight: 600,
-    title: "WebWrap Studio",
+    title: "Paneshell",
     backgroundColor: "#f5f5f7",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      webviewTag: true, // live URL preview; locked down in will-attach-webview below
     },
+  });
+
+  mainWindow.webContents.on("will-attach-webview", (_e, webPreferences, params) => {
+    delete webPreferences.preload;
+    webPreferences.nodeIntegration = false;
+    webPreferences.contextIsolation = true;
+    webPreferences.sandbox = true;
+    if (!/^https?:\/\//i.test(params.src || "")) _e.preventDefault();
   });
 
   mainWindow.setMenuBarVisibility(false);
@@ -41,13 +79,18 @@ app.on("window-all-closed", () => {
 
 // Folders the renderer may ask us to reveal (see revealPath).
 const allowedRoots = new Set();
-const defaultOutputDir = () => path.join(app.getPath("documents"), "WebWrap Studio");
+const defaultOutputDir = () => {
+  const nd = path.join(app.getPath("documents"), "Paneshell");
+  const old = path.join(app.getPath("documents"), "WebWrap Studio"); // keep the old folder if it's the only one
+  const f = require("fs");
+  return !f.existsSync(nd) && f.existsSync(old) ? old : nd;
+};
 
 // ─────────────────────────────────────────────────────────────────────────
 // IPC handlers
 // ─────────────────────────────────────────────────────────────────────────
 
-ipcMain.handle("webwrap:select-folder", async () => {
+ipcMain.handle("paneshell:select-folder", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "createDirectory"],
   });
@@ -56,13 +99,13 @@ ipcMain.handle("webwrap:select-folder", async () => {
   return result.filePaths[0];
 });
 
-ipcMain.handle("webwrap:default-output-dir", async () => {
+ipcMain.handle("paneshell:default-output-dir", async () => {
   const dir = defaultOutputDir();
   await fs.mkdir(dir, { recursive: true });
   return dir;
 });
 
-ipcMain.handle("webwrap:inspect-url", async (_event, url) => {
+ipcMain.handle("paneshell:inspect-url", async (_event, url) => {
   try {
     return await inspectUrl(url);
   } catch {
@@ -70,22 +113,52 @@ ipcMain.handle("webwrap:inspect-url", async (_event, url) => {
   }
 });
 
-ipcMain.handle("webwrap:create-project", async (_event, payload) => {
+ipcMain.handle("paneshell:create-project", async (_event, payload) => {
   try {
     const clean = await validatePayload(payload);
     const projectDir = await generateProject(clean);
     allowedRoots.add(projectDir);
+    saveSettings({ recent: store.addRecent(getSettings().recent, { name: clean.name, url: clean.url, folder: projectDir, date: new Date().toISOString() }) });
     return { ok: true, projectDir };
   } catch (error) {
     return { ok: false, error: error.message || "Failed to create the project." };
   }
 });
 
-ipcMain.handle("webwrap:open-folder", async (_event, folderPath) => {
+ipcMain.handle("paneshell:get-settings", () => getSettings());
+ipcMain.handle("paneshell:set-settings", (_e, p) => {
+  const patch = {};
+  if (p && typeof p.onboarded === "boolean") patch.onboarded = p.onboarded;
+  if (p && typeof p.crashReports === "boolean") patch.crashReports = p.crashReports;
+  saveSettings(patch);
+});
+
+// Only folders we recorded may be opened / read back.
+const recentFolder = (f) => getSettings().recent.find((e) => e.folder === f);
+
+ipcMain.handle("paneshell:open-recent", async (_e, folder) => {
+  if (recentFolder(folder)) await shell.openPath(folder);
+});
+
+// Refill data for a saved project: its paneshell.config.json if present, else the saved entry.
+ipcMain.handle("paneshell:regenerate-data", async (_e, folder) => {
+  const e = recentFolder(folder);
+  if (!e) return null;
+  const cfg = store.read(path.join(folder, "paneshell.config.json"), null) || store.read(path.join(folder, "webwrap.config.json"), null);
+  const c = cfg && typeof cfg === "object" ? cfg : {};
+  const { url, name, ...rest } = c;
+  return { url: typeof url === "string" ? url : e.url, name: typeof name === "string" ? name : e.name, options: rest, outputDir: path.dirname(folder) };
+});
+
+ipcMain.handle("paneshell:copy-report", (_e, text) => {
+  clipboard.writeText(store.redact(`Paneshell ${app.getVersion()} ${process.platform}\n${String(text).slice(0, 4000)}`));
+});
+
+ipcMain.handle("paneshell:open-folder", async (_event, folderPath) => {
   await shell.openPath(folderPath);
 });
 
-ipcMain.handle("webwrap:reveal-path", async (_event, p) => {
+ipcMain.handle("paneshell:reveal-path", async (_event, p) => {
   if (typeof p !== "string" || !path.isAbsolute(p)) return;
   const target = path.resolve(p);
   const roots = [defaultOutputDir(), ...allowedRoots];
@@ -96,7 +169,7 @@ ipcMain.handle("webwrap:reveal-path", async (_event, p) => {
   if (inside) shell.showItemInFolder(target);
 });
 
-ipcMain.handle("webwrap:pick-icon", async () => {
+ipcMain.handle("paneshell:pick-icon", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "ico"] }],
@@ -196,6 +269,7 @@ async function validatePayload(payload) {
     description,
     outputDir: p.outputDir,
     iconDataUrl: typeof p.iconDataUrl === "string" ? normaliseIconDataUrl(p.iconDataUrl) : null,
+    options: p.options, // validated by normalizeOptions in the generator
   };
 }
 
@@ -305,7 +379,7 @@ function runCapture(cmd, args) {
   });
 }
 
-ipcMain.handle("webwrap:check-build-env", async () => {
+ipcMain.handle("paneshell:check-build-env", async () => {
   const [node, npm] = await Promise.all([
     runCapture("node", ["--version"]),
     runCapture(isWin ? "npm.cmd" : "npm", ["--version"]),
@@ -316,7 +390,7 @@ ipcMain.handle("webwrap:check-build-env", async () => {
       ok: false,
       node: node || undefined,
       npm: npm || undefined,
-      message: `${missing} not found. Install Node.js (which includes npm) from https://nodejs.org, then restart WebWrap Studio.`,
+      message: `${missing} not found. Install Node.js (which includes npm) from https://nodejs.org, then restart Paneshell.`,
     };
   }
   return { ok: true, node, npm };
@@ -325,12 +399,10 @@ ipcMain.handle("webwrap:check-build-env", async () => {
 async function validateProjectDir(dir) {
   if (typeof dir !== "string" || !path.isAbsolute(dir)) throw new Error("Invalid project folder.");
   const resolved = path.resolve(dir);
-  for (const f of ["webwrap.config.json", "package.json"]) {
-    try {
-      await fs.access(path.join(resolved, f));
-    } catch {
-      throw new Error("That folder is not a WebWrap project.");
-    }
+  const has = (f) => fs.access(path.join(resolved, f)).then(() => true, () => false);
+  // legacy projects (webwrap.config.json) still build; their own main.js reads that file
+  if (!(await has("package.json")) || !((await has("paneshell.config.json")) || (await has("webwrap.config.json")))) {
+    throw new Error("That folder is not a Paneshell project.");
   }
   return resolved;
 }
@@ -356,7 +428,7 @@ function killTree(child) {
 function runStage(sender, dir, stage, cmd, args) {
   return new Promise((resolve, reject) => {
     const send = (line) => {
-      if (!sender.isDestroyed()) sender.send("webwrap:build-log", { stage, line });
+      if (!sender.isDestroyed()) sender.send("paneshell:build-log", { stage, line });
     };
     const child = spawn(cmd, args, { cwd: dir, shell: isWin, windowsHide: true });
     build.child = child;
@@ -380,7 +452,10 @@ function runStage(sender, dir, stage, cmd, args) {
     child.on("close", (code) => {
       clearTimeout(timer);
       if (pending.trim()) send(pending);
-      if (build.cancelled) reject(new Error("Build cancelled."));
+      if (build.cancelled) {
+        // A killed npm install can leave a corrupt node_modules ("Invalid Version:"); start clean next time.
+        fs.rm(path.join(dir, "node_modules"), { recursive: true, force: true }).catch(() => {}).finally(() => reject(new Error("Build cancelled.")));
+      }
       else if (build.timedOut) reject(new Error("Build timed out after 20 minutes."));
       else if (code !== 0) reject(new Error(`${stage === "install" ? "npm install" : "electron-builder"} failed (exit code ${code}). See the log above.`));
       else resolve();
@@ -388,7 +463,7 @@ function runStage(sender, dir, stage, cmd, args) {
   });
 }
 
-ipcMain.handle("webwrap:build-app", async (event, opts) => {
+ipcMain.handle("paneshell:build-app", async (event, opts) => {
   if (build) return { ok: false, error: "A build is already running." };
   build = { child: null, cancelled: false, timedOut: false, started: Date.now() };
   try {
@@ -404,13 +479,14 @@ ipcMain.handle("webwrap:build-app", async (event, opts) => {
     allowedRoots.add(dir);
     return { ok: true, installerPath };
   } catch (error) {
+    logError("build-failed", error.message || "Build failed.");
     return { ok: false, error: error.message || "Build failed." };
   } finally {
     build = null;
   }
 });
 
-ipcMain.handle("webwrap:cancel-build", async () => {
+ipcMain.handle("paneshell:cancel-build", async () => {
   if (build && build.child) {
     build.cancelled = true;
     killTree(build.child);

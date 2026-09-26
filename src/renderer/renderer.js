@@ -1,5 +1,5 @@
 /**
- * WebWrap Studio - renderer process
+ * Paneshell - renderer process
  */
 
 const form = document.getElementById("form");
@@ -18,7 +18,7 @@ const live = document.getElementById("live");
 const outputTextEl = document.querySelector(".output-text");
 const $ = (id) => document.getElementById(id);
 
-const api = () => window.webwrap || {};
+const api = () => window.paneshell || {};
 const has = (name) => typeof api()[name] === "function";
 
 const hints = {
@@ -174,6 +174,7 @@ async function inspect() {
     info = {};
   }
   if (seq !== inspectSeq) return; // a newer URL superseded this one
+  $("offline").hidden = !!info.ok;
 
   if (!iconPicked) iconDataUrl = info.ok && info.iconDataUrl ? info.iconDataUrl : null;
   if (!nameEdited || !nameInput.value.trim()) {
@@ -190,7 +191,29 @@ function showPreview() {
   renderIcon();
 }
 
+// Live site preview: an on-demand <webview>, created only when asked (progressive disclosure).
+const siteFrame = $("site-frame");
+const toggleSite = $("toggle-site");
+function closeSite() {
+  siteFrame.replaceChildren();
+  siteFrame.hidden = true;
+  toggleSite.setAttribute("aria-expanded", "false");
+  toggleSite.textContent = "Preview site";
+}
+toggleSite.addEventListener("click", () => {
+  if (!siteFrame.hidden) return closeSite();
+  const wv = document.createElement("webview");
+  wv.setAttribute("src", inspectedUrl);
+  wv.setAttribute("partition", "paneshell-preview"); // no persistence, isolated from the app
+  siteFrame.replaceChildren(wv);
+  siteFrame.hidden = false;
+  toggleSite.setAttribute("aria-expanded", "true");
+  toggleSite.textContent = "Hide preview";
+});
+
 function resetPreview() {
+  $("offline").hidden = true;
+  closeSite();
   preview.hidden = true;
   emptyEl.hidden = false;
   emptyEl.removeAttribute("aria-busy");
@@ -299,11 +322,11 @@ function applyOptions(o = {}) {
 function markPreset(id) {
   presetsEl.querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
   presetReset.hidden = !id;
-  const p = (window.WEBWRAP_PRESETS || []).find((x) => x.id === id);
+  const p = (window.PANESHELL_PRESETS || []).find((x) => x.id === id);
   presetDesc.textContent = p ? p.description : "";
 }
 
-(window.WEBWRAP_PRESETS || []).forEach((p) => {
+(window.PANESHELL_PRESETS || []).forEach((p) => {
   const b = document.createElement("button");
   b.type = "button";
   b.className = "chip";
@@ -398,6 +421,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     projectDir = result.projectDir || outputDir;
+    loadRecent();
     form.reset();
     markPreset(null);
     resetPreview();
@@ -421,6 +445,61 @@ form.addEventListener("submit", async (event) => {
     setOutputDir("");
   }
 })();
+
+// ---------------------------------------------------------------------------
+// Recent projects, first-run hint, privacy opt-in
+// ---------------------------------------------------------------------------
+
+const recentEl = $("recent");
+const recentList = $("recent-list");
+
+async function loadRecent() {
+  if (!has("getSettings")) return;
+  const { recent = [] } = await api().getSettings();
+  recentEl.hidden = !recent.length;
+  recentList.replaceChildren(...recent.map((e) => {
+    const li = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = `${e.name} (${new Date(e.date).toLocaleDateString()})`;
+    const open = document.createElement("button");
+    open.type = "button"; open.className = "link"; open.textContent = "Open folder";
+    open.addEventListener("click", () => api().openRecent(e.folder));
+    const regen = document.createElement("button");
+    regen.type = "button"; regen.className = "link"; regen.textContent = "Regenerate";
+    regen.addEventListener("click", async () => {
+      const d = await api().regenerateData(e.folder);
+      if (!d) return;
+      urlInput.value = d.url;
+      inspectedUrl = normalizeUrl(d.url);
+      nameInput.value = d.name;
+      nameEdited = true;
+      applyOptions(d.options);
+      markPreset(null);
+      setOutputDir(d.outputDir);
+      showPreview();
+      urlInput.focus();
+    });
+    li.append(label, open, regen);
+    return li;
+  }));
+}
+
+async function initSettings() {
+  if (!has("getSettings")) return;
+  const s = await api().getSettings();
+  $("opt-crash").checked = !!s.crashReports;
+  $("onboard").hidden = !!s.onboarded;
+  loadRecent();
+}
+$("opt-crash").addEventListener("change", (e) => api().setSettings({ crashReports: e.target.checked }));
+function endOnboarding() { $("onboard").hidden = true; api().setSettings({ onboarded: true }); }
+$("dismiss-onboard").addEventListener("click", endOnboarding);
+$("try-example").addEventListener("click", () => {
+  urlInput.value = "example.com";
+  inspect();
+  endOnboarding();
+});
+initSettings();
 
 // ---------------------------------------------------------------------------
 // Views: form -> success -> build. Focus moves to the new state's heading.
@@ -490,6 +569,7 @@ function finishBuild({ title, message, ok, failed }) {
   $("cancel-build").hidden = true;
   $("show-installer").hidden = !ok;
   $("show-details").hidden = !failed;
+  $("copy-report").hidden = !failed || !has("copyReport");
   $("build-back").hidden = ok;
   buildIllustration(ok ? "done" : failed ? "fail" : "build");
   $("build-title").focus();
@@ -499,8 +579,10 @@ function finishBuild({ title, message, ok, failed }) {
 async function startBuild() {
   const buildBtn = $("build-installer");
   envNote.textContent = "";
+  $("env-missing").hidden = true;
   if (!has("buildApp")) {
     envNote.textContent = "Building installers isn't available in this version.";
+    $("env-missing").hidden = false;
     return;
   }
   buildBtn.disabled = true;
@@ -511,6 +593,7 @@ async function startBuild() {
       if (!env || !env.ok) {
         envNote.textContent =
           (env && env.message) || "Node.js and npm are needed to build an installer. Install them, then try again.";
+        $("env-missing").hidden = false;
         return;
       }
     }
@@ -559,9 +642,11 @@ async function startBuild() {
     finishBuild({ title: "Installer ready", message: installerPath, ok: true });
     $("show-installer").hidden = !(installerPath && has("revealPath"));
   } else {
+    const symlink = /Cannot create symbolic link|required privilege is not held/i.test(logLines.join("\n"));
     finishBuild({
       title: "The build didn't finish",
-      message: (result && result.error) || "Something went wrong while building.",
+      message: ((result && result.error) || "Something went wrong while building.") +
+        (symlink ? " Windows blocked a symbolic link. Turn on Developer Mode (Settings > Privacy & security > For developers), then try again." : ""),
       failed: true,
     });
   }
@@ -583,4 +668,14 @@ $("show-details").addEventListener("click", () => {
   d.open = true;
   d.querySelector("summary").focus();
 });
+$("copy-report").addEventListener("click", async () => {
+  await api().copyReport(`${$("build-message").textContent}\n${logLines.slice(-30).join("\n")}`);
+  announce("Error report copied.");
+});
 $("build-back").addEventListener("click", () => showView("view-success", "success-title"));
+
+// Escape cancels a running build.
+document.addEventListener("keydown", (e) => {
+  const btn = $("cancel-build");
+  if (e.key === "Escape" && !$("view-build").hidden && !btn.hidden && !btn.disabled) btn.click();
+});

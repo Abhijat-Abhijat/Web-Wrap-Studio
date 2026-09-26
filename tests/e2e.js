@@ -7,7 +7,7 @@ const os = require("os");
 const path = require("path");
 
 const scenario = process.argv[2] || "ui";
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "webwrap-e2e-")).replace(/\\/g, "/");
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "paneshell-e2e-")).replace(/\\/g, "/");
 app.setPath("documents", tmp + "/docs"); // keep the real Documents folder untouched
 app.setPath("userData", tmp + "/userData");
 require("../src/main/main.js");
@@ -15,7 +15,7 @@ require("../src/main/main.js");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let win;
 const ev = (code) => win.webContents.executeJavaScript(code, true);
-const api = (call) => ev(`(async()=>{const v=await window.webwrap.${call};return v===undefined?null:JSON.parse(JSON.stringify(v))})()`);
+const api = (call) => ev(`(async()=>{const v=await window.paneshell.${call};return v===undefined?null:JSON.parse(JSON.stringify(v))})()`);
 async function waitFor(code, ms = 30000) {
   const end = Date.now() + ms;
   while (Date.now() < end) {
@@ -24,7 +24,7 @@ async function waitFor(code, ms = 30000) {
   }
   throw new Error("timeout waiting for: " + code);
 }
-const REQUIRED = ["package.json", "main.js", "preload.js", "webwrap.config.json", "build/icon.png"];
+const REQUIRED = ["package.json", "main.js", "preload.js", "paneshell.config.json", "build/icon.png"];
 
 async function makeProject(url = "https://example.com", name = "E2E App") {
   const out = tmp + "/out";
@@ -68,7 +68,7 @@ const scenarios = {
     r = await api(`checkBuildEnv()`);
     assert.ok(r.ok && r.node && r.npm, "build env " + JSON.stringify(r));
     r = await api(`getDefaultOutputDir()`);
-    assert.strictEqual(path.normalize(r), path.normalize(tmp + "/docs/WebWrap Studio"));
+    assert.strictEqual(path.normalize(r), path.normalize(tmp + "/docs/Paneshell"));
     assert.ok(fs.statSync(r).isDirectory());
 
     const base = { url: "https://example.com", name: "Ok Name", description: "", outputDir: tmp, iconDataUrl: null };
@@ -104,7 +104,7 @@ const scenarios = {
   async build() {
     const dir = await makeProject();
     const t = Date.now();
-    await ev(`window.__log=[];void window.webwrap.onBuildLog(m=>window.__log.push(m.stage+": "+m.line))`);
+    await ev(`window.__log=[];void window.paneshell.onBuildLog(m=>window.__log.push(m.stage+": "+m.line))`);
     const r = await api(`buildApp(${JSON.stringify({ projectDir: dir, target: "current" })})`);
     const log = await ev(`window.__log.slice(-25).join("\\n")`);
     console.log("result:", JSON.stringify(r), "secs:", Math.round((Date.now() - t) / 1000));
@@ -117,7 +117,7 @@ const scenarios = {
 
   async cancel() {
     const dir = await makeProject();
-    await ev(`window.__n=0;void window.webwrap.onBuildLog(()=>window.__n++)`);
+    await ev(`window.__n=0;void window.paneshell.onBuildLog(()=>window.__n++)`);
     const p = api(`buildApp(${JSON.stringify({ projectDir: dir, target: "current" })})`);
     await sleep(8000);
     const dup = await api(`buildApp(${JSON.stringify({ projectDir: dir, target: "current" })})`);
@@ -142,7 +142,7 @@ app.whenReady().then(async () => {
     win = BrowserWindow.getAllWindows()[0];
     assert.ok(win, "no window");
     await new Promise((r) => (win.webContents.isLoading() ? win.webContents.once("did-finish-load", r) : r()));
-    assert.strictEqual(await ev(`typeof window.webwrap.buildApp`), "function", "preload not exposed");
+    assert.strictEqual(await ev(`typeof window.paneshell.buildApp`), "function", "preload not exposed");
     await scenarios[scenario]();
     console.log("E2E", scenario, "PASS");
   } catch (e) {

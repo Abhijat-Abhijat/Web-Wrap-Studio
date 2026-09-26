@@ -1,6 +1,6 @@
 # 05 Product Hunt and launch posts (TODO M10, M11, M14, M16, M17)
 
-Placeholders to fill before use: `[WEBSITE_URL]`, `[GITHUB_URL]`, `[VERSION]`, `[YOUR_NAME]`. Nothing in this file should be published until the gates at the bottom are met. All claims assume T10 (in-app build), T12 (missing Node handling) and T28 (signed release) are Done; edit where they are not.
+Placeholders to fill before use: https://paneshell.abhijat.co.in, `[GITHUB_URL]`, `[VERSION]`, Abhijat. Nothing in this file should be published until the gates at the bottom are met. All claims assume T10 (in-app build), T12 (missing Node handling) and T28 (signed release) are Done; edit where they are not.
 
 Verified about Product Hunt from public guides (search summaries, several sources agree): tagline limit is 60 characters; the daily cycle runs on Pacific time and starts at 12:01 AM Pacific; Tuesday to Thursday are the highest-traffic days; weekends have less traffic and less competition. Source pages: [Product Hunt preparing for launch](https://www.producthunt.com/launch/preparing-for-launch), [Screenhance](https://screenhance.com/blog/product-hunt-launch-checklist-2026), [LaunchPact](https://www.launchpact.io/blog/how-to-have-a-successful-product-hunt-launch). Product Hunt's own rules change; re-read the live launch form before submitting.
 
@@ -8,28 +8,30 @@ Description limit, checked 2026-09-25: Product Hunt's own [preparing-for-launch 
 
 ## Listing draft
 
-**Name:** WebWrap Studio
+**Name:** Paneshell
 
 **Tagline (37 characters):** Paste a URL. Get a desktop installer.
 
 **Description (about 200 characters):**
-WebWrap Studio turns a website address into a desktop app for Windows, macOS and Linux. No terminal, no account. The generated project is plain Electron code you own. Free and open source.
+Paneshell turns a website address into a desktop app for Windows, macOS and Linux. No terminal, no account. The generated project is plain Electron code you own. Free and open source.
 
 **Topics:** Developer Tools, Productivity, Open Source, Windows, Mac (check that Linux and Electron exist as topics; unverified).
 
-**Links:** Website `[WEBSITE_URL]`; GitHub `[GITHUB_URL]`.
+**Links:** Website https://paneshell.abhijat.co.in; GitHub `[GITHUB_URL]`.
+
+**Demo:** `brand/demo/demo-final.mp4` (video) and `brand/demo/demo-final.gif` (gallery/GIF); also embedded in the README.
 
 **Gallery (M9):** exact frames, on-screen text and required app states are in 07-demo-script.md. Sizes: 1270x760 gallery, 240x240 thumbnail. Add the 30-second demo (M8) first.
 
 ## Maker comment (first comment)
 
-Hi, I'm `[YOUR_NAME]`, the maker of WebWrap Studio.
+Hi, I'm Abhijat, the maker of Paneshell.
 
 I wanted to give a web app to people who would never open a terminal, and the tools I found either needed one or were tied to a subscription. Nativefier, the well-known one, has been archived since 2023.
 
-WebWrap Studio is one screen. You paste a URL, check the name and icon it fills in, and press create. You get an Electron project and, with in-app build, an installer for Windows, macOS or Linux. The project is plain code with one config file, so you can edit it or leave the tool whenever you want. No account, no telemetry by default.
+Paneshell is one screen. You paste a URL, check the name and icon it fills in, and press create. You get an Electron project and, with in-app build, an installer for Windows, macOS or Linux. The project is plain code with one config file, so you can edit it or leave the tool whenever you want. No account, no telemetry by default.
 
-What it is not: it is not small. Electron ships Chromium, so an installer is `[measured size, e.g. "about N MB on Windows"]`; for reference, Electron's own runtime download is 123 to 158 MB. If size is your priority, Pake and PakePlus (Tauri) produce much smaller apps and I would point you there. Hosted services also exist; the difference is that WebWrap Studio runs on your machine, costs nothing per app and gives you the project. WebWrap Studio is for the case where you want a GUI, an installer to hand out, and a project you control.
+What it is not: it is not small. Electron ships Chromium, so an installer is `[measured size, e.g. "about N MB on Windows"]`; for reference, Electron's own runtime download is 123 to 158 MB. If size is your priority, Pake and PakePlus (Tauri) produce much smaller apps and I would point you there. Hosted services also exist; the difference is that Paneshell runs on your machine, costs nothing per app and gives you the project. Paneshell is for the case where you want a GUI, an installer to hand out, and a project you control.
 
 It is free and open source (`[GITHUB_URL]`). `[Known limitations: unsigned installers on macOS and Windows show OS warnings; list what is true at launch.]`
 
@@ -37,19 +39,19 @@ I would like to know what you would wrap first, and where the flow got confusing
 
 ## FAQ answers
 
-**How is this different from Nativefier?** Nativefier is a command-line tool and is archived and read-only since September 2023. WebWrap Studio is a graphical app and is maintained. Output is a plain Electron project, similar in spirit.
+**How is this different from Nativefier?** Nativefier is a command-line tool and is archived and read-only since September 2023. Paneshell is a graphical app and is maintained. Output is a plain Electron project, similar in spirit.
 
-**How is this different from Pake?** Pake uses Tauri and produces much smaller apps (its repo says under 10 MB). It is a command-line tool. WebWrap Studio uses Electron, so apps are larger, and trades that for a GUI and a familiar Electron project.
+**How is this different from Pake?** Pake uses Tauri and produces much smaller apps (its repo says under 10 MB). It is a command-line tool. Paneshell uses Electron, so apps are larger, and trades that for a GUI and a familiar Electron project.
 
-**How is this different from WebCatalog?** WebCatalog is a workspace for running web apps, with a free tier limited to 2 apps and paid plans starting at $5 per user per month billed annually. WebWrap Studio makes a project and installer you can distribute and has no limits or account. `[Do not claim WebCatalog cannot export installers until tested; see 02.]`
+**How is this different from WebCatalog?** WebCatalog is a workspace for running web apps, with a free tier limited to 2 apps and paid plans starting at $5 per user per month billed annually. Paneshell makes a project and installer you can distribute and has no limits or account. `[Do not claim WebCatalog cannot export installers until tested; see 02.]`
 
-**How is this different from PakePlus and hosted services like Websktop?** PakePlus is a free Tauri-based GUI with much smaller output; its cloud packaging needs a GitHub token. Hosted services build on their servers and charge per app, per build or by plan. WebWrap Studio is local, free, and gives you an editable Electron project, at the cost of larger installers.
+**How is this different from PakePlus and hosted services like Websktop?** PakePlus is a free Tauri-based GUI with much smaller output; its cloud packaging needs a GitHub token. Hosted services build on their servers and charge per app, per build or by plan. Paneshell is local, free, and gives you an editable Electron project, at the cost of larger installers.
 
-**Why not just use "Install page as app" in Chrome?** For your own use, do that; it is free and needs nothing. WebWrap Studio is for when you need to give another person a standalone installer.
+**Why not just use "Install page as app" in Chrome?** For your own use, do that; it is free and needs nothing. Paneshell is for when you need to give another person a standalone installer.
 
 **Is it free?** Yes. `[Confirm after M4 and M5 decisions.]`
 
-**Which license?** `[MIT, pending M5.]`
+**Which license?** MIT (LICENSE file present). Contact: abhijat.tech@gmail.com.
 
 **Why is my installer flagged as unsafe?** Unsigned installers trigger SmartScreen on Windows and Gatekeeper on macOS. `[State whether releases are signed once T23 is done.]` Generated apps are unsigned unless you add your own certificate.
 
@@ -96,7 +98,7 @@ After
 
 Hacker News rules (verify on the live guidelines page before posting): title starts with "Show HN", link to something people can try, no asking for upvotes, reply to comments. Do not use a URL shortener or ask friends to vote.
 
-**Title:** Show HN: WebWrap Studio, paste a URL, get a desktop installer
+**Title:** Show HN: Paneshell, paste a URL, get a desktop installer
 
 **Text:**
 I made a graphical app that turns a website URL into an Electron project and, with in-app build, installers for Windows, macOS and Linux. It is aimed at people who need to hand a web app to someone who does not use a terminal.
@@ -105,7 +107,7 @@ It exists because Nativefier has been archived since 2023 and the other options 
 
 Tradeoffs: installers are large (`[measured size]`) because Electron bundles Chromium. Installers are `[signed / unsigned]`. For a personal shortcut, Chrome's "Install page as app" is simpler.
 
-Source: `[GITHUB_URL]`. Download: `[WEBSITE_URL]`. I would like feedback on the generated project structure and the first-run flow.
+Source: `[GITHUB_URL]`. Download: https://paneshell.abhijat.co.in. I would like feedback on the generated project structure and the first-run flow.
 
 ## r/electronjs draft
 
@@ -114,11 +116,11 @@ Check the subreddit's current rules on self-promotion before posting; use the fl
 **Title:** I built a GUI that scaffolds an Electron wrapper for any URL (open source)
 
 **Body:**
-WebWrap Studio is an Electron app that generates an Electron project for a website. Paste a URL, it fills in name and icon, and writes a project with a `webwrap.config.json` that the template `main.js` reads. It builds with electron-builder for Windows, macOS and Linux and has a GitHub Actions workflow for three-OS builds.
+Paneshell is an Electron app that generates an Electron project for a website. Paste a URL, it fills in name and icon, and writes a project with a `paneshell.config.json` that the template `main.js` reads. It builds with electron-builder for Windows, macOS and Linux and has a GitHub Actions workflow for three-OS builds.
 
 Things I would like technical feedback on: the config-driven template, how the main process validates the payload (http and https only, writable output folder), and what you would want in the config that is not there. Limitations: large installers; `[list]`.
 
-Repo: `[GITHUB_URL]`. Site: `[WEBSITE_URL]`.
+Repo: `[GITHUB_URL]`. Site: https://paneshell.abhijat.co.in.
 
 ## Supporter outreach template
 
@@ -126,13 +128,13 @@ Send individually to people who know you or have a reason to care. Do not ask an
 
 > Hi `[NAME]`,
 >
-> I'm launching WebWrap Studio on Product Hunt on `[DATE]` (it goes live at 12:01 AM Pacific). It is a free, open-source app that turns a website URL into a desktop installer with no terminal. I would value your honest look at it, especially the first-run flow.
+> I'm launching Paneshell on Product Hunt on `[DATE]` (it goes live at 12:01 AM Pacific). It is a free, open-source app that turns a website URL into a desktop installer with no terminal. I would value your honest look at it, especially the first-run flow.
 >
 > If you have 5 minutes on launch day, the listing will be at `[PH_URL]`. A real comment about what worked or confused you helps more than a vote. If it is not your area, no problem at all.
 >
-> You can try it beforehand: `[WEBSITE_URL]` or `[GITHUB_URL]`.
+> You can try it beforehand: https://paneshell.abhijat.co.in or `[GITHUB_URL]`.
 >
-> Thanks, `[YOUR_NAME]`
+> Thanks, Abhijat
 
 Target list: 10 to 20 people (TODO M14). Keep a private tracker: name, relationship, contacted, replied.
 

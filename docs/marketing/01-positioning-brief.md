@@ -3,14 +3,14 @@
 Status: draft for owner review. Date: 2026-09-25.
 Method: product-lens diagnostic (who, pain, why now, MVP, anti-goal, success metric), then the competitive-platform-analysis brief fields (identity, offer, target, differentiator, scoping consequence, strategic tension). Competitor facts are in 02-competitors.md with sources.
 
-Fact vs inference: statements about what WebWrap Studio does today come from TODO.md. Statements about competitors are sourced in 02. Anything labelled "inference" is my judgment, not a measured fact. There is no user research behind the personas below; they are hypotheses to test.
+Fact vs inference: statements about what Paneshell does today come from TODO.md. Statements about competitors are sourced in 02. Anything labelled "inference" is my judgment, not a measured fact. There is no user research behind the personas below; they are hypotheses to test.
 
 ## What the product is, today
 
-WebWrap Studio is an Electron desktop app. Verified in the code on 2026-09-25 (`src/main/generator.js`, `src/renderer`, `../website`):
+Paneshell is an Electron desktop app. Verified in the code on 2026-09-25 (`src/main/generator.js`, `src/renderer`, `../website`):
 
 - **Single input.** The user pastes a URL; the app inspects it and fills in the name and icon automatically (IPC `webwrap:inspect-url`), with a default output folder.
-- **Config-driven output.** The generated project has a `webwrap.config.json` (keys today: `url`, `name`, `window.width/height`, `openExternalLinksInBrowser`, `singleInstance`) that the template `main.js` reads. New features become new keys.
+- **Config-driven output.** The generated project has a `paneshell.config.json` (keys today: `url`, `name`, `window.width/height`, `openExternalLinksInBrowser`, `singleInstance`) that the template `main.js` reads. New features become new keys.
 - **Installer targets.** The generated project ships electron-builder config and `dist:win`, `dist:linux`, `dist:mac` scripts; the studio repo has a three-OS GitHub Actions workflow.
 - **In-app build: in progress.** There is no build IPC handler in `main.js` yet. Until in-app build (T10) and missing-Node handling (T12) land and pass on all three OSes, a user still needs Node and a terminal to produce an installer. Every "no terminal" claim below depends on this.
 - **Landing site: built** as static pages in `../website` (home, download, FAQ, changelog); not yet deployed.
@@ -42,12 +42,12 @@ The obvious incumbent (Nativefier) is unmaintained, which leaves a slot for "the
 
 ## Differentiator
 
-WebWrap Studio is the free, local, open-source option where you paste one URL and get a plain Electron project (and, once T10 ships, an installer) with no subscription, no per-app or per-build fee, and no third party seeing your URL.
+Paneshell is the free, local, open-source option where you paste one URL and get a plain Electron project (and, once T10 ships, an installer) with no subscription, no per-app or per-build fee, and no third party seeing your URL.
 
 Checkable differences:
 
-1. **Local and account-free.** Hosted services build on their servers and charge per app, per build or by plan (02). PakePlus cloud packaging needs a GitHub token. WebWrap Studio needs neither once T10 and T12 land.
-2. **You own the output.** The generated project is plain Electron plus one `webwrap.config.json`. Open it, edit it, leave the tool. Nothing phones home.
+1. **Local and account-free.** Hosted services build on their servers and charge per app, per build or by plan (02). PakePlus cloud packaging needs a GitHub token. Paneshell needs neither once T10 and T12 land.
+2. **You own the output.** The generated project is plain Electron plus one `paneshell.config.json`. Open it, edit it, leave the tool. Nothing phones home.
 3. **One input.** URL in; name, icon and output folder are filled in automatically and editable.
 4. **Cross-platform output from one GUI.** Fluid and Coherence X are Mac only.
 
@@ -75,7 +75,7 @@ Weight competitors by who they serve (non-developer who wants an installer), not
 
 **"Paste a URL, get a desktop installer. Free, local, and the project is yours."** Lead with the one-input flow and ownership, aimed at persona 1 and 2 (people who need to hand someone an app). "No terminal" stays as a supporting line rather than the headline, because PakePlus and the hosted services already claim it, and a developer can test it on day one. Do not lead with "wrap any site as an app"; that describes a dozen products.
 
-Supporting proof points, in order (each now backed by what exists): one input with name and icon filled in automatically; a generated project driven by one `webwrap.config.json`; installers for three operating systems via GitHub Actions today and in-app build when T10 ships; free, open source, no account, URL never leaves your machine except to fetch the site's title and icon.
+Supporting proof points, in order (each now backed by what exists): one input with name and icon filled in automatically; a generated project driven by one `paneshell.config.json`; installers for three operating systems via GitHub Actions today and in-app build when T10 ships; free, open source, no account, URL never leaves your machine except to fetch the site's title and icon.
 
 Gate: do not say "installer without a terminal" publicly until T10 and T12 are Done and tested on all three OSes. Before then the accurate wording is "generates an Electron project with installer scripts and a CI workflow". If launch must happen earlier, that is the weaker but honest angle.
 

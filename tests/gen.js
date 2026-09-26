@@ -64,7 +64,7 @@ const script = normalizeOptions({ injectJs: "</script><script>alert(1)</script>"
 assert.strictEqual(script.injectJs, "</script><script>alert(1)</script>"); // data only; never interpolated into code
 
 (async () => {
-  const out = fs.mkdtempSync(path.join(os.tmpdir(), "webwrap-gen-"));
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), "paneshell-gen-"));
   try {
     const sets = [
       undefined,
@@ -76,12 +76,12 @@ assert.strictEqual(script.injectJs, "</script><script>alert(1)</script>"); // da
       const dir = await generateProject({
         url: "https://example.com", name: `Gen ${i}`, description: "", outputDir: out, iconDataUrl: null, options: sets[i],
       });
-      for (const f of ["main.js", "preload.js", "offline.html", "webwrap.config.json"]) {
+      for (const f of ["main.js", "preload.js", "offline.html", "paneshell.config.json"]) {
         assert.ok(fs.existsSync(path.join(dir, f)), `missing ${f}`);
       }
       execFileSync(process.execPath, ["--check", path.join(dir, "main.js")]);
       execFileSync(process.execPath, ["--check", path.join(dir, "preload.js")]);
-      const cfg = JSON.parse(fs.readFileSync(path.join(dir, "webwrap.config.json"), "utf8"));
+      const cfg = JSON.parse(fs.readFileSync(path.join(dir, "paneshell.config.json"), "utf8"));
       assert.strictEqual(cfg.url, "https://example.com");
       assert.strictEqual(cfg.singleInstance, true);
       assert.strictEqual(cfg.openExternalLinksInBrowser, true);

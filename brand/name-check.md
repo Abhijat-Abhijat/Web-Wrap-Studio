@@ -1,3 +1,5 @@
+> **Decision: renamed to Paneshell on 2026-09-26.** This file is kept as history of the naming research; the text below refers to the old name "WebWrap Studio".
+
 # Name check: "WebWrap" and "WebWrap Studio"
 
 Checked 2026-09-25 with web search, the npm registry search API and the GitHub search API. This is a quick collision scan, not a trademark clearance and not legal advice. Ask a trademark attorney before you spend money on a domain, logo print runs or a launch.

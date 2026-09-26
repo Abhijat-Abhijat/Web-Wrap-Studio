@@ -38,12 +38,20 @@ Proposed secondary line under the headline: "Free, local, no account. The projec
 
 ## One-line pitch
 
-WebWrap Studio turns a URL into a desktop app project for Windows, macOS and Linux from a single screen, with no terminal and no account.
+Paneshell turns a URL into a desktop app project for Windows, macOS and Linux from a single screen, with no terminal and no account.
 
 ## Three-sentence pitch
 
-Paste a website address into WebWrap Studio and it creates a ready-to-build Electron project, driven by one `webwrap.config.json`, with the name and icon filled in for you, and it can produce installers for Windows, macOS and Linux (in-app build is in development; today the project includes build scripts and a GitHub Actions workflow). You do not need a terminal, an account or a subscription, and the project it generates is plain Electron code that you own and can edit. It is free and open source, and it is meant for people who need to give someone a real installer for a web app, not for people who want to organise browser tabs.
+Paste a website address into Paneshell and it creates a ready-to-build Electron project, driven by one `paneshell.config.json`, with the name and icon filled in for you, and it can produce installers for Windows, macOS and Linux (in-app build is in development; today the project includes build scripts and a GitHub Actions workflow). You do not need a terminal, an account or a subscription, and the project it generates is plain Electron code that you own and can edit. It is free and open source, and it is meant for people who need to give someone a real installer for a web app, not for people who want to organise browser tabs.
 
 ## Words to avoid in copy
 
 Do not write "the only" or "first" no-terminal tool (false, see 02). Seamless, unleash, game-changer, effortless, revolutionary, "blazing fast", "lightweight" (untrue for Electron; Pake owns it). Do not claim "fast", "small" or "secure" without a measurement.
+
+## Name: Paneshell
+
+Say it "PAYN-shell" (pane as in window pane, shell as in app shell). Nine characters, so it fits Product Hunt's 40-character name limit with room to spare.
+
+- Pane + shell: a window pane (the website) wrapped in a native app shell.
+- The pane is the site you already have; the shell is the desktop app that hosts it.
+- Short, one word, easy to type as a command, a repo name and an installer name (`Paneshell-Setup-<version>.exe`).
